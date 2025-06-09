@@ -1,12 +1,20 @@
 <template>
   <div class="start-screen">
+    <div class="game-title-banner">The Narrative Engine</div>
     <h1>Welcome, Adventurer</h1>
     <p>
-      Prepare yourself. For Azerim finds iteslf in peril. Only you are equipped to save the world
-      from darkness.
+      Prepare yourself. For the world of Azerim finds iteslf in peril. Only you are equipped to save
+      everyone from evil and darkness.
     </p>
-    <button class="start-button">Start New Game</button>
-    <button class="load-button">Load Saved Game</button>
+    <div class="button-group">
+      <button class="start-button">Start New Game</button>
+      <!-- <button class="load-button">Load Saved Game</button> -->
+    </div>
+
+    <img
+      src="C:\repos\BrandonPersonal\TheNarrativeEngine\src\assets\images\claudius_battle_sprite_animated.gif"
+      alt="fighting knight"
+    />
   </div>
 </template>
 
@@ -19,6 +27,25 @@ export default defineComponent({
 
 <style scoped>
 /* Scoped styles only apply to this component */
+
+.game-title-banner {
+  font-family: var(--font-family-heading); /* Use a fancy display font */
+  font-size: var(--font-size-xxl); /* Make it large and prominent */
+  color: var(--color-accent-gold); /* Gold color for the title */
+  text-transform: uppercase; /* Optional: Make it all caps */
+  letter-spacing: 2px; /* Optional: Space out letters for impact */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8); /* Optional: Adds depth */
+  margin-bottom: var(--spacing-lg); /* Space below the banner */
+  padding: var(--spacing-sm) var(--spacing-md); /* Some padding around the text */
+  border: 3px ridge #cd7f32;
+  border-radius: 10px 200px 0px 200px;
+  background-color: rgba(0, 0, 0, 0.4); /* Slightly transparent background for the banner */
+  box-shadow: 0px 3px 17px 1px rgba(205, 127, 50, 0.57);
+  -webkit-box-shadow: 0px 3px 17px 1px rgba(205, 127, 50, 0.57);
+  -moz-box-shadow: 0px 3px 17px 1px rgba(205, 127, 50, 0.57); /* Add some shadow for a raised effect */
+  padding-left: 40px; /* Add some left padding for better alignment */
+  padding-right: 40px; /* Add some right padding for better alignment */
+}
 .start-screen {
   display: flex;
   flex-direction: column;
@@ -32,7 +59,7 @@ export default defineComponent({
 .start-screen h1 {
   font-family: var(--font-family-display); /* Use a more prominent font */
   font-size: var(--font-size-xl);
-  color: var(--color-accent-gold);
+  color: var(--color-accent-bronze);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -72,5 +99,8 @@ export default defineComponent({
 .load-button:active {
   transform: translateY(0);
   background-color: var(--color-accent-bronze);
+}
+.button-group {
+  margin-bottom: var(--spacing-xl);
 }
 </style>

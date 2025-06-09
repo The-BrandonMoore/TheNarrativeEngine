@@ -1,4 +1,5 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Smythe&display=swap');
 
 *::before,
 *::after {
@@ -18,15 +19,15 @@
   /* Typography */
   --font-family-body: 'Georgia', serif; /* A classic serif font for body text */
   --font-family-heading:
-    steampunk, 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; /* A clear sans-serif for headings, or choose something more steampunk */
-  --font-family-display:
-    'Palatino Linotype', 'Book Antiqua', Palatino, serif; /* For game titles or special text */
+    Smythe, 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; /* A clear sans-serif for headings, or choose something more steampunk */
+  --font-family-display: 'Book Antiqua', Palatino, serif; /* For game titles or special text */
 
   --font-size-base: 1.1rem; /* Base font size, slightly larger than default 16px */
   --font-size-sm: 0.9rem;
   --font-size-md: 1.3rem;
   --font-size-lg: 1.8rem;
   --font-size-xl: 2.5rem;
+  --font-size-xxl: 3.5rem; /* For very large headings or titles */
 
   /* Spacing */
   --spacing-xs: 4px;
