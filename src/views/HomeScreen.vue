@@ -3,12 +3,12 @@
     <div class="game-title-banner">The Narrative Engine</div>
     <h1>Welcome, Adventurer</h1>
     <p>
-      Prepare yourself. For the world of Azerim finds iteslf in peril. Only you are equipped to save
-      everyone from evil and darkness.
+      Prepare yourself. For the world of Azerim finds iteslf in peril. Only you are equipped to
+      defeat the coming darkness and evil. God be with you Adventurer!
     </p>
     <div class="button-group">
-      <button class="start-button">Start New Game</button>
-      <!-- <button class="load-button">Load Saved Game</button> -->
+      <button class="start-button" @click="navigateToCharacterSelection">Start New Game</button>
+      <!-- <button class="load-button" @click="loadSavedGame">Load Saved Game</button> -->
     </div>
 
     <img
@@ -20,8 +20,29 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+
 export default defineComponent({
-  name: 'StartScreen',
+  name: 'HomeScreen',
+  data() {
+    return {
+      playerName: '',
+      selectedClass: '' as 'Warrior' | 'Mage' | 'Rogue' | 'Archer' | '',
+      errorMessages: [] as string[],
+    }
+  },
+  methods: {
+    navigateToCharacterSelection() {
+      this.$router.push({ name: 'character-selection' }) // Navigate to character selection screen
+    },
+    loadSavedGame() {
+      alert('Load game functionality is not implemented yet.')
+    },
+  },
+  mounted() {
+    console.log('HomeView component mounted')
+    //consider if I want to clear the playerStore on mount of StartScreen
+    // if user comes back from game. For now, resetPlayerState in startNewGame.
+  },
 })
 </script>
 
@@ -40,6 +61,7 @@ export default defineComponent({
   border: 3px ridge #cd7f32;
   border-radius: 10px 200px 0px 200px;
   background-color: rgba(0, 0, 0, 0.4); /* Slightly transparent background for the banner */
+  text-shadow: 2px 4px 3px rgba(255, 215, 0, 0.65);
   box-shadow: 0px 3px 17px 1px rgba(205, 127, 50, 0.57);
   -webkit-box-shadow: 0px 3px 17px 1px rgba(205, 127, 50, 0.57);
   -moz-box-shadow: 0px 3px 17px 1px rgba(205, 127, 50, 0.57); /* Add some shadow for a raised effect */

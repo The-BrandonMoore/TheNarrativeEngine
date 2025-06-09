@@ -1,14 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/StartScreen.vue'
-import StartScreen from '../views/StartScreen.vue'
+import HomeScreen from '../views/HomeScreen.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'start',
-      component: StartScreen,
+      name: 'home',
+      component: HomeScreen,
+    },
+    {
+      path: '/game',
+      name: 'gameplay',
+      component: () => import('../views/GamePlayScreen.vue'), // Lazy loading the GamePlayScreen component
+    },
+    {
+      path: '/character-selection',
+      name: 'character-selection',
+      component: () => import('../views/CharacterSelectionScreen.vue'), // Lazy loading the SelectionScreen component
     },
     // We can add more routes later, like a /game path
     // {
