@@ -1,85 +1,41 @@
-<script setup lang="ts">
+<script lang="ts">
+import { defineComponent } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    RouterLink,
+    RouterView,
+  },
+  data() {
+    return {
+      // You can add any reactive data properties here if needed
+    }
+  },
+  methods: {
+    // You can add methods here if needed
+  },
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <div id="app-container">
+    <RouterView />
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+<style>
+@import '@/assets/main.css';
+#app-container {
+  max-width: 1200px; /* Limits the max width of your game content */
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+  min-height: 100vh; /* Ensures the container takes full viewport height */
+  margin: 0 auto; /* Centers the container horizontally */
+  padding: var(--spacing-lg); /* Padding around the main content */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally within the container */
+  justify-content: center; /* Center content vertically within the container */
 }
 </style>

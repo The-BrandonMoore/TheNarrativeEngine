@@ -1,35 +1,91 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-a,
-.green {
+:root {
+  /* Colors */
+  --color-background-primary: #000000; /* Pure Black */
+  --color-text-primary: #ffffff; /* Pure White */
+  --color-accent-gold: #ffd700; /* A nice gold for highlights/borders */
+  --color-accent-bronze: #cd7f32; /* A steampunk bronze/brown */
+  --color-border-dark: #333333; /* Dark grey for subtle borders */
+
+  /* Typography */
+  --font-family-body: 'Georgia', serif; /* A classic serif font for body text */
+  --font-family-heading:
+    steampunk, 'Lucida Sans Unicode', 'Lucida Grande', sans-serif; /* A clear sans-serif for headings, or choose something more steampunk */
+  --font-family-display:
+    'Palatino Linotype', 'Book Antiqua', Palatino, serif; /* For game titles or special text */
+
+  --font-size-base: 1.1rem; /* Base font size, slightly larger than default 16px */
+  --font-size-sm: 0.9rem;
+  --font-size-md: 1.3rem;
+  --font-size-lg: 1.8rem;
+  --font-size-xl: 2.5rem;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Border Radius */
+  --border-radius-sm: 3px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 10px;
+
+  /* Box Shadows (optional, for depth) */
+  --box-shadow-light: 0 2px 5px rgba(255, 255, 255, 0.1);
+  --box-shadow-dark: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  background-color: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  line-height: 1.6; /* Improves readability of text blocks */
+  min-height: 100vh; /* Ensure body takes full viewport height */
+  display: flex; /* For centering content in App.vue */
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Basic Heading Styles --- */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-family-heading);
+  color: var(--color-accent-bronze); /* Headings stand out */
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--font-size-xl);
+}
+h2 {
+  font-size: var(--font-size-lg);
+}
+h3 {
+  font-size: var(--font-size-md);
+}
+/* Add more heading sizes as needed */
+
+/* --- Link Styles --- */
+a {
+  color: var(--color-accent-bronze);
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+a:hover {
+  text-decoration: underline;
 }
