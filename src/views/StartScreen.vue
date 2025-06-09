@@ -7,8 +7,6 @@
     </p>
     <button class="start-button">Start New Game</button>
     <button class="load-button">Load Saved Game</button>
-
-    <img src="@/assets/logo.svg" alt="App Logo" class="start-screen__logo" />
   </div>
 </template>
 
