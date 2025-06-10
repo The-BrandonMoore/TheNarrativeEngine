@@ -94,6 +94,10 @@ export default defineComponent({
 
     startNewGame() {
       this.errorMessages = []
+      if (!this.playerName.trim() && !this.selectedClass) {
+        this.errorMessages.push('Enter a character name and select a class.')
+        return
+      }
       if (!this.playerName.trim()) {
         this.errorMessages.push('Please enter a character name.')
       }
