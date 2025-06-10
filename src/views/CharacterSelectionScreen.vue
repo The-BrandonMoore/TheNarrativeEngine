@@ -5,7 +5,7 @@
     <p>Forge your destiny and begin your journey.</p>
 
     <div class="character-creation-section">
-      <h2>Details:</h2>
+      <h2>Character Details:</h2>
 
       <div class="form-group">
         <label for="playerNameInput">Character Name:</label>
@@ -38,6 +38,12 @@
             @click="selectClass('Mage')"
           >
             Mage
+          </button>
+          <button
+            :class="{ 'class-button': true, selected: selectedClass === 'Archer' }"
+            @click="selectClass('Archer')"
+          >
+            Archer
           </button>
         </div>
       </div>
