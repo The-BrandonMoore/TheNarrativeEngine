@@ -8,7 +8,8 @@
         "id": "enter_village",
         "text": "Enter Steamhaven village.",
         "targetId": "steamhaven_square",
-        "targetType": "location"
+        "targetType": "location",
+        "consequence": ["start_combat:goblin1,goblin2"]
       },
       {
         "id": "explore_woods",

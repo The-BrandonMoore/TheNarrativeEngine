@@ -19,20 +19,50 @@
       </div>
 
       <div class="main-story-area">
-        <div class="story-text-box">
-          <p class="current-description">{{ currentDescription }}</p>
-          <p v-if="lastActionMessage" class="last-action-message">{{ lastActionMessage }}</p>
+        <div v-if="combatStore.isCombatActive" class="combat-ui">
+          <div class="enemies-display">
+            <div v-for="enemy in combatStore.activeEnemies" :key="enemy.id" class="enemy-card">
+              <!-- <img v-if="enemy.image" src="enemy.image" alt="enemy.name" class="enemy-portrait" /> -->
+              <h3>{{ enemy.name }}</h3>
+              <p>Health: {{ enemy.health }} / {{ enemy.maxHealth }}</p>
+            </div>
+          </div>
+
+          <div class="combat-log-display">
+            <p v-for="(log, index) in combatStore.combatLog" :key="index" class="combat-log-entry">
+              {{ log }}
+            </p>
+          </div>
+          <div class="combat-actions">
+            <button
+              class="action-button"
+              @click="playerAttack"
+              :disabled="!combatStore.isPlayersTurn"
+            >
+              Attack
+            </button>
+            <button class="action-button" :disabled="true">Defend (Coming Soon)</button>
+            <button class="action-button" :disabled="true">Use Item (Coming Soon)</button>
+            <button class="action-button" :disabled="true">Flee (Coming Soon)</button>
+          </div>
         </div>
 
-        <div class="choices-area">
-          <button
-            v-for="choice in currentChoices"
-            :key="choice.id"
-            class="choice-button"
-            @click="processChoice(choice)"
-          >
-            {{ choice.text }}
-          </button>
+        <div v-else class="narrative-ui">
+          <div class="story-text-box">
+            <p class="current-description">{{ currentDescription }}</p>
+            <p v-if="lastActionMessage" class="last-action-message">{{ lastActionMessage }}</p>
+          </div>
+
+          <div class="choices-area">
+            <button
+              v-for="choice in currentChoices"
+              :key="choice.id"
+              class="choice-button"
+              @click="processChoice(choice)"
+            >
+              {{ choice.text }}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -55,6 +85,7 @@ import { usePlayerStore } from '../stores/playerStore'
 import { useGameWorldStore } from '../stores/gameWorldStore'
 import { getGameData } from '../services/dataLoader'
 import { type GameLocation, type GameEncounter, type Choice } from '../types/game'
+import { useCombatStore } from '../stores/combatStore'
 
 export default defineComponent({
   name: 'GamePlayScreen',
@@ -71,6 +102,9 @@ export default defineComponent({
     },
     gameWorldStore() {
       return useGameWorldStore()
+    },
+    combatStore() {
+      return useCombatStore()
     },
     playerName(): string {
       return this.playerStore.name
@@ -119,6 +153,18 @@ export default defineComponent({
       const gameData = getGameData()
       if (!gameData) {
         console.error('Game Data not loaded yet!')
+        return
+      }
+
+      // If combat is active, don't update from location/encounter, stay in combat view
+      if (this.combatStore.isCombatActive) {
+        // Description might change to indicate combat in progress
+        this.currentDescription =
+          this.combatStore.combatLog.length > 0
+            ? this.combatStore.combatLog[this.combatStore.combatLog.length - 1]
+            : 'Combat in progress...'
+        // Choices will be replaced by combat actions (Attack, Defend, etc.)
+        // For now, we'll manually replace choices in the template
         return
       }
 
@@ -207,14 +253,27 @@ export default defineComponent({
             this.lastActionMessage += `Game flag '<span class="math-inline">{flagName}' set to '</span>{flagValue}'. `
             break
           case 'start_combat': // Placeholder for combat initiation
-            this.gameWorldStore.setGameStatus('PLAYING')
-            this.lastActionMessage += `Combat initiated! Enemies: ${value}. `
+            // 'value' will be a comma-separated list of enemy IDs (e.g., "goblin1,goblin2")
+            const enemyIds = value.split(',')
+            this.combatStore.startCombat(enemyIds)
+            // Also set game world status to combat (redundant with combatStore.isActive, but good for clarity)
+            this.gameWorldStore.setGameStatus('COMBAT')
+            this.lastActionMessage += `Combat initiated! You face ${enemyIds.join(', ')}. `
+            this.combatStore.addCombatLog(this.lastActionMessage) // Add to combat log too
             break
           // ... add more action types as game grows
           default:
             console.warn('Unknown action type:', action)
         }
       })
+    },
+    playerAttack() {
+      if (this.combatStore.isPlayersTurn) {
+        this.combatStore.addCombatLog(`You attack! (placeholder)`)
+        this.combatStore.nextTurn()
+      } else {
+        this.combatStore.addCombatLog("It's not your turn!")
+      }
     },
     goHome() {
       this.$router.push({ name: 'home' }) // Navigate to the start screen
@@ -232,6 +291,32 @@ export default defineComponent({
         this.updateCurrentScene()
       },
       immediate: false,
+    },
+    // NEW: Watch for combat activity to update scene (or clear)
+    'combatStore.isActive': {
+      handler(newVal, oldVal) {
+        if (newVal && !oldVal) {
+          // Combat just became active
+          this.updateCurrentScene() // Update UI to reflect combat state
+          // Maybe trigger the first combat description
+          this.currentDescription = this.combatStore.combatLog[0]
+          this.currentChoices = [] // Clear narrative choices
+        } else if (!newVal && oldVal) {
+          // Combat just ended
+          // Logic to handle post-combat (e.g., return to last location, new choices)
+          this.gameWorldStore.setGameStatus('PLAYING') // Back to normal gameplay
+          this.updateCurrentScene() // Refresh scene based on location
+        }
+      },
+    },
+    // NEW: Watch for combat log changes to update description (for turn-based combat)
+    'combatStore.combatLog.length': {
+      handler() {
+        if (this.combatStore.isActive && this.combatStore.combatLog.length > 0) {
+          this.currentDescription =
+            this.combatStore.combatLog[this.combatStore.combatLog.length - 1] // Show last log message as description
+        }
+      },
     },
   },
   created() {
@@ -432,6 +517,186 @@ export default defineComponent({
   transform: translateY(-2px);
 }
 .back-button:active {
+  transform: translateY(0);
+  background-color: var(--color-accent-bronze);
+}
+
+/*  Styles for Combat UI */
+.combat-ui {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.enemies-display {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  flex-wrap: wrap; /* Allow enemies to wrap */
+}
+
+.enemy-card {
+  background-color: rgba(139, 0, 0, 0.7); /* Dark red for enemies */
+  border: 2px solid var(--color-accent-gold);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  text-align: center;
+  min-width: 150px;
+  box-shadow: var(--box-shadow-dark);
+}
+
+.enemy-portrait {
+  width: 64px; /* Adjust size as needed, e.g., 2x scale for 32px original */
+  height: 64px;
+  image-rendering: crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  margin-bottom: var(--spacing-xs);
+  border: 1px solid var(--color-text-primary);
+  border-radius: var(--border-radius-sm);
+}
+
+.enemy-card h3 {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  margin-bottom: var(--spacing-xs);
+}
+
+.enemy-card p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+}
+
+.combat-log-display {
+  background-color: rgba(0, 0, 0, 0.6);
+  border: 1px dashed var(--color-border-dark);
+  padding: var(--spacing-md);
+  height: 150px; /* Fixed height for combat log */
+  overflow-y: auto;
+  margin-bottom: var(--spacing-lg);
+  text-align: left;
+}
+
+.combat-log-entry {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.combat-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  margin-top: var(--spacing-md);
+}
+
+.action-button {
+  background-color: var(--color-accent-bronze);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-accent-gold);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-heading);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  flex-grow: 1; /* Allow buttons to grow */
+  max-width: 48%; /* Max width for two columns */
+}
+
+.action-button:hover:not(:disabled) {
+  background-color: var(--color-accent-gold);
+  color: var(--color-background-primary);
+  transform: translateY(-1px);
+}
+
+.action-button:active:not(:disabled) {
+  transform: translateY(0);
+  background-color: var(--color-accent-bronze);
+}
+
+.action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: var(--color-border-dark);
+  border-color: var(--color-border-dark);
+  color: #aaa;
+}
+
+/* Keep existing narrative-ui styles if not removing, or just remove them */
+.narrative-ui {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+.story-text-box {
+  /* Ensure this exists */
+  margin-bottom: var(--spacing-lg);
+  text-align: left;
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: 50vh;
+}
+
+.current-description {
+  /* Ensure this exists */
+  font-size: var(--font-size-base);
+  line-height: 1.8;
+  margin-bottom: var(--spacing-md);
+}
+
+.last-action-message {
+  /* Ensure this exists */
+  font-size: var(--font-size-sm);
+  color: var(--color-accent-gold);
+  font-style: italic;
+  margin-top: var(--spacing-sm);
+  border-top: 1px dashed var(--color-border-dark);
+  padding-top: var(--spacing-sm);
+}
+
+.choices-area {
+  /* Ensure this exists */
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  width: 100%;
+  margin-top: var(--spacing-lg);
+}
+
+.choice-button {
+  /* Ensure this exists */
+  background-color: var(--color-accent-bronze);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-accent-gold);
+  padding: var(--spacing-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-body);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.choice-button:hover {
+  /* Ensure this exists */
+  background-color: var(--color-accent-gold);
+  color: var(--color-background-primary);
+  transform: translateY(-1px);
+}
+
+.choice-button:active {
+  /* Ensure this exists */
   transform: translateY(0);
   background-color: var(--color-accent-bronze);
 }

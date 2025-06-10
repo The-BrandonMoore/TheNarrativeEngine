@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { GameEnemy } from '@/types/game'
+import { type GameEnemy } from '@/types/game'
 import { getEnemyById } from '@/services/dataLoader'
 
 export interface CombatState {
@@ -23,7 +23,7 @@ export const useCombatStore = defineStore('combat', {
   getters: {
     isCombatActive: (state) => state.isActive,
     activeEnemies: (state) => state.enemies,
-    isPlayerTurn: (state) => state.isActive && state.currentTurnEntityId === 'player',
+    isPlayersTurn: (state) => state.isActive && state.currentTurnEntityId === 'player',
   },
 
   actions: {

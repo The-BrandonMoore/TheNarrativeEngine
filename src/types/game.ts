@@ -15,7 +15,7 @@ export interface PlayerState {
 
 // --- New Interfaces for Game Data ---
 
-export type GameStatus = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'WIN'
+export type GameStatus = 'MENU' | 'PLAYING' | 'PAUSED' | 'GAME_OVER' | 'WIN' | 'COMBAT'
 export type GamePhase = 'story' | 'combat' | 'puzzle' | 'dialogue' | 'event' // Different interaction types
 
 // Represents a choice the player can make

@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 export default defineComponent({
   name: 'App',
   components: {
-    RouterLink,
+    //RouterLink,
     RouterView,
   },
   data() {
