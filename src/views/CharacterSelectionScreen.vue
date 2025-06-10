@@ -321,8 +321,8 @@ export default defineComponent({
   We're scaling them up 3x for better visibility on screen.
   So, 32px * 3 = 96px.
   */
-  width: 250px; /* Set the display width of the image */
-  height: 250px; /* Set the display height of the image */
+  width: 125px; /* Set the display width of the image */
+  height: 125px; /* Set the display height of the image */
 
   /* Ensure it's treated as a block element so width/height are respected */
   display: block;
