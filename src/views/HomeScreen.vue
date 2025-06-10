@@ -11,10 +11,7 @@
       <!-- <button class="load-button" @click="loadSavedGame">Load Saved Game</button> -->
     </div>
 
-    <img
-      src="C:\repos\BrandonPersonal\TheNarrativeEngine\src\assets\images\claudius_battle_sprite_animated.gif"
-      alt="fighting knight"
-    />
+    <img src="/assets/images/claudius_battle_sprite_animated.gif" alt="fighting knight" />
   </div>
 </template>
 
