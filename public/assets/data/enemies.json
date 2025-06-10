@@ -1,0 +1,23 @@
+[
+  {
+    "id": "goblin1",
+    "name": "Grubby Goblin",
+    "health": 30,
+    "maxHealth": 30,
+    "attack": 8,
+    "defense": 2,
+    "drops": [
+      { "itemId": "rusty_dagger", "chance": 0.5 },
+      { "itemId": "small_gold_pouch", "chance": 0.8 }
+    ]
+  },
+  {
+    "id": "goblin2",
+    "name": "Scrawny Goblin",
+    "health": 25,
+    "maxHealth": 25,
+    "attack": 7,
+    "defense": 1,
+    "drops": [{ "itemId": "small_gold_pouch", "chance": 0.7 }]
+  }
+]

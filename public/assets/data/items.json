@@ -1,0 +1,29 @@
+[
+  {
+    "id": "healthPotion1",
+    "name": "Basic Health Potion",
+    "description": "When drank, offers user 5 points of healing.",
+    "type": "consumable",
+    "value": 5,
+    "effects": "heal:5",
+    "image": null
+  },
+  {
+    "id": "rustyKnife",
+    "name": "Rusty Knife",
+    "description": "Poor quality, Poor condition, but it stabs . . . mostly.",
+    "type": "weapon",
+    "value": 2,
+    "effects": "attack:3",
+    "image": null
+  },
+  {
+    "id": "foilHelm",
+    "name": "Tin Foil Helmet",
+    "description": "They can't hurt you if they can't read your mind!",
+    "type": "armor",
+    "value": 1,
+    "effects": "defense:1",
+    "image": null
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "guard_dialogue_encounter",
+    "type": "dialogue",
+    "title": "Weary Guard",
+    "description": "The guard looks up as you approach, his mechanical eye whirring. 'State your business, traveler. Times are perilous.'",
+    "choices": [
+      {
+        "id": "ask_about_peril",
+        "text": "Ask about the perils.",
+        "targetId": "guard_dialogue_peril",
+        "targetType": "event"
+      },
+      {
+        "id": "introduce_self",
+        "text": "Introduce yourself.",
+        "targetId": "guard_dialogue_intro",
+        "targetType": "event"
+      },
+      {
+        "id": "leave_guard",
+        "text": "Thank him and leave.",
+        "targetId": "steamhaven_square",
+        "targetType": "location"
+      }
+    ]
+  },
+  {
+    "id": "goblin_ambush",
+    "type": "combat",
+    "title": "Goblin Ambush!",
+    "description": "Suddenly, two scrawny goblins leap from the bushes, rusty daggers glinting! They look hungry.",
+    "choices": [
+      {
+        "id": "attack_goblins",
+        "text": "Attack the goblins!",
+        "targetId": "start_combat",
+        "targetType": "event",
+        "consequence": ["start_combat:goblin1,goblin2"]
+      },
+      {
+        "id": "attempt_flee",
+        "text": "Attempt to flee.",
+        "targetId": "flee_attempt",
+        "targetType": "event",
+        "consequence": ["roll_dice:dex,10", "if_success:flee_success", "if_fail:flee_fail"]
+      }
+    ],
+    "enemyIds": ["goblin1", "goblin2"]
+  }
+]

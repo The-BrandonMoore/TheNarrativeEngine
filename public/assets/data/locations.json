@@ -1,0 +1,66 @@
+[
+  {
+    "id": "start_village",
+    "name": "Starting Village",
+    "description": "You awake on the outskirts of Steamhaven, a bustling village built around a towering clock tower. The air hums with the distant thrum of machinery and the scent of coal smoke mixes with fresh bread. A dirt path leads further into the village, while a dark, winding trail disappears into the nearby Whispering Woods.",
+    "choices": [
+      {
+        "id": "enter_village",
+        "text": "Enter Steamhaven village.",
+        "targetId": "steamhaven_square",
+        "targetType": "location"
+      },
+      {
+        "id": "explore_woods",
+        "text": "Explore the Whispering Woods.",
+        "targetId": "woods_entrance",
+        "targetType": "location"
+      }
+    ]
+  },
+  {
+    "id": "steamhaven_square",
+    "name": "Steamhaven Village Square",
+    "description": "The village square is alive with activity. Merchants hawk their wares from stalls adorned with intricate brass fittings. A weary guard stands by the tavern entrance, his mechanical arm whirring softly.",
+    "choices": [
+      {
+        "id": "enter_tavern",
+        "text": "Enter The Cog & Sprocket Tavern.",
+        "targetId": "cog_sprocket_tavern",
+        "targetType": "location"
+      },
+      {
+        "id": "talk_guard",
+        "text": "Approach the guard.",
+        "targetId": "guard_dialogue_encounter",
+        "targetType": "encounter"
+      },
+      {
+        "id": "leave_square",
+        "text": "Leave the village square (return to outskirts).",
+        "targetId": "start_village",
+        "targetType": "location"
+      }
+    ]
+  },
+  {
+    "id": "woods_entrance",
+    "name": "Whispering Woods Entrance",
+    "description": "Dense, ancient trees with gnarled branches loom over the narrow trail. A low, mournful sigh seems to drift on the breeze, and strange glyphs are carved into some of the tree trunks.",
+    "choices": [
+      {
+        "id": "venture_deeper",
+        "text": "Venture deeper into the woods.",
+        "targetId": "dark_woods_path",
+        "targetType": "location"
+      },
+      {
+        "id": "return_outskirts",
+        "text": "Return to Steamhaven outskirts.",
+        "targetId": "start_village",
+        "targetType": "location"
+      }
+    ],
+    "onEnterActions": ["check_for_ambush"]
+  }
+]
