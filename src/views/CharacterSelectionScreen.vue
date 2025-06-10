@@ -1,8 +1,8 @@
 <template>
   <div class="character-selection-screen">
-    <div class="game-title-banner">The Narrative Engine</div>
+    <!-- <div class="game-title-banner">The Narrative Engine</div> -->
     <h1>Create Your Adventurer!</h1>
-    <p>Forge your destiny and begin your journey.</p>
+    <!-- <p>Forge your destiny and begin your journey.</p> -->
 
     <div class="character-creation-section">
       <h2>Character Details:</h2>
@@ -53,7 +53,7 @@
       </div>
     </div>
     <div v-if="selectedClass" class="character-image-container">
-      <p class="portrait-label">{{ selectedClass }}</p>
+      <p class="image-label">{{ selectedClass }}</p>
       <img :src="characterImageSrc" :alt="selectedClass + ' portrait'" class="character-image" />
     </div>
 
@@ -145,12 +145,13 @@ export default defineComponent({
   font-family: var(--font-family-display);
   font-size: var(--font-size-xl);
   color: var(--color-accent-gold);
-  margin-bottom: var(--spacing-lg);
+  /* margin-bottom: var(--spacing-lg); */
+  margin-bottom: var(--spacing-xs);
 }
 
 .character-selection-screen p {
   font-size: var(--font-size-md);
-  margin-bottom: var(--spacing-xl);
+  /* margin-bottom: var(--spacing-xl); */
   max-width: 600px;
   line-height: 1.8;
 }
@@ -160,7 +161,7 @@ export default defineComponent({
   border: 1px solid var(--color-border-dark);
   border-radius: var(--border-radius-md);
   padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-xs);
   width: 100%;
   max-width: 500px;
   box-shadow: var(--box-shadow-light);
@@ -342,10 +343,10 @@ export default defineComponent({
 /* Styles for the text label below the portrait */
 .image-label {
   font-family: var(--font-family-heading); /* Use a heading-style font */
-  font-size: var(--font-size-md); /* Make it a bit larger than body text */
+  font-size: var(--font-size-lg) !important; /* Make it a bit larger than body text */
   color: var(--color-accent-gold); /* Gold color for emphasis */
   text-transform: uppercase; /* Make it uppercase for stylistic choice */
-  margin: none;
+  margin-bottom: 0px;
 }
 
 /* ... (rest of your existing styles for .text-input, .class-button, etc.) ... */
