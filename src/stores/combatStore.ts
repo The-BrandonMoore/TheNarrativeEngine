@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { type GameEnemy } from '@/types/game'
 import { getEnemyById } from '@/services/dataLoader'
+import { usePlayerStore } from './playerStore'
 
 export interface CombatState {
   isActive: boolean
@@ -24,6 +25,11 @@ export const useCombatStore = defineStore('combat', {
     isCombatActive: (state) => state.isActive,
     activeEnemies: (state) => state.enemies,
     isPlayersTurn: (state) => state.isActive && state.currentTurnEntityId === 'player',
+    allEnemiesDefeated: (state) => state.enemies.every((enemy) => enemy.health <= 0),
+    isPlayerDefeated: () => {
+      const playerStore = usePlayerStore()
+      return playerStore.health <= 0
+    },
   },
 
   actions: {
@@ -62,17 +68,87 @@ export const useCombatStore = defineStore('combat', {
       if (!this.isActive || !this.currentTurnEntityId) {
         return
       }
-      const currentIndex = this.turnOrder.indexOf(this.currentTurnEntityId)
-      const nextIndex = (currentIndex + 1) % this.turnOrder.length
-      this.currentTurnEntityId = this.turnOrder[nextIndex]
+      //check for combat end conditions *before* advancing turn if needed
+      if (this.allEnemiesDefeated) {
+        this.addCombatLog('Combat is over, all enemies have been defeated!')
+        this.endCombat()
+        return
+      }
+      if (this.isPlayerDefeated) {
+        this.addCombatLog('Combat is over, you have been defeated.')
+        this.endCombat()
+        return
+      }
 
+      const currentIndex = this.turnOrder.indexOf(this.currentTurnEntityId)
+      let nextIndex = (currentIndex + 1) % this.turnOrder.length
+      const nextEntityId = this.turnOrder[nextIndex]
+
+      while (nextEntityId !== 'player' && this.enemies.some((e) => e.id === nextEntityId)) {
+        console.log(`Skipping defeated enemy: ${nextEntityId}`)
+        nextIndex = (nextIndex + 1) % this.turnOrder.length
+        if (nextEntityId === 'player' && this.allEnemiesDefeated) {
+          break
+        }
+      }
+      this.currentTurnEntityId = nextEntityId
       this.combatLog.push(`It is now ${this.currentTurnEntityId}'s turn...`)
 
       if (this.currentTurnEntityId !== 'player') {
-        console.log(`${this.currentTurnEntityId} is taking its turn...`)
-        setTimeout(() => {
+        //Find the actual enemy object
+        const activeEnemy = this.enemies.find((e) => e.id === this.currentTurnEntityId)
+        if (activeEnemy && activeEnemy.health > 0) {
+          this.addCombatLog(`${activeEnemy.name} prepares to attack!`)
+          setTimeout(() => {
+            const playerStore = usePlayerStore()
+            const damageDealt = Math.max(1, activeEnemy.attack - playerStore.defense)
+            this.dealDamageToPlayer(damageDealt)
+
+            //After enemy action check for player defeat
+            if (this.isPlayerDefeated) {
+              this.addCombatLog(
+                `You have been defeated. All hope is now lost. The world has fallen into darkness. Thanks for nothing ${playerStore.name}! Game Over`,
+              )
+              this.endCombat()
+            } else if (!this.allEnemiesDefeated) {
+              this.nextTurn()
+            }
+          }, 1000)
+        } else {
           this.nextTurn()
-        }, 500)
+        }
+      }
+    },
+
+    dealDamageToEnemy(enemyId: string, damage: number) {
+      const enemy = this.enemies.find((e) => e.id === enemyId)
+      if (enemy) {
+        enemy.health = Math.max(0, enemy?.health - damage)
+        this.addCombatLog(`${enemy.name} takes ${damage}.  (${enemy.health} / ${enemy.maxHealth})`)
+        if (enemy.health <= 0) {
+          this.addCombatLog(`${enemy.name} has been defeated!`)
+          if (this.allEnemiesDefeated) {
+            this.addCombatLog('You have defeated all enemies! The battle has been won!')
+            this.endCombat()
+            // TODO: handle rewards, EXP, return to location, etc.
+          }
+        }
+      }
+    },
+
+    dealDamageToPlayer(damage: number) {
+      const playerStore = usePlayerStore()
+      playerStore.takeDamage(damage)
+      this.addCombatLog(
+        `You take ${damage} damage! Remaining Health (${playerStore.health} / ${playerStore.maxHealth})`,
+      )
+
+      if (playerStore.health <= 0) {
+        this.addCombatLog(
+          `You have been defeated. All hope is now lost. The world has fallen into darkness. Thanks for nothing ${playerStore.name}!`,
+        )
+        this.endCombat()
+        // TODO: trigger game over screen
       }
     },
 
