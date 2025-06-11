@@ -85,6 +85,7 @@ import { useGameWorldStore } from '../stores/gameWorldStore'
 import { getGameData } from '../services/dataLoader'
 import { type GameLocation, type GameEncounter, type Choice } from '../types/game'
 import { useCombatStore } from '../stores/combatStore'
+import { rollDie, skillCheck } from '../services/diceRoller'
 
 export default defineComponent({
   name: 'GamePlayScreen',
@@ -258,6 +259,31 @@ export default defineComponent({
             this.gameWorldStore.setGameStatus('COMBAT')
             this.lastActionMessage += `Combat initiated! You face ${enemyIds.join(', ')}. `
             this.combatStore.addCombatLog(this.lastActionMessage) // Add to combat log too
+            break
+          case 'check_for_ambush':
+            // Ensure the ambush hasn't already happened (using a game flag)
+            if (!this.gameWorldStore.gameFlags['woods_ambush_triggered']) {
+              // Example: 50% chance for an ambush (roll a d10, if 1-5, ambush)
+              const ambushChanceRoll = rollDie(20)
+              console.log('Ambush check: Rolled', ambushChanceRoll)
+
+              // You could also do a skill check, e.g., if (skillCheck(this.playerStore.agility, 12)) { /* no ambush */ }
+              if (ambushChanceRoll <= 5) {
+                // 50% chance to trigger
+                this.lastActionMessage = 'You were ambushed in the woods!'
+                this.gameWorldStore.addStoryLog(this.lastActionMessage) // Add to log
+                this.combatStore.startCombat(['goblin1', 'goblin2']) // Trigger the ambush combat
+                this.gameWorldStore.setGameStatus('COMBAT') // Update game status
+                this.gameWorldStore.setGameFlag('woods_ambush_triggered', true) // Set flag to prevent future ambushes here
+              } else {
+                this.lastActionMessage = 'You cautiously navigate the woods. No sign of trouble.'
+                this.gameWorldStore.addStoryLog(this.lastActionMessage) // Add to log
+                this.gameWorldStore.setGameFlag('woods_ambush_triggered', true) // Still set flag, ambush won't happen again here
+              }
+            } else {
+              // If flag is already set, ambush won't happen again
+              this.lastActionMessage = 'You feel safer knowing the woods are clear (for now).'
+            }
             break
           // ... add more action types as game grows
           default:

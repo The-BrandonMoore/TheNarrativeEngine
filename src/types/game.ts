@@ -23,7 +23,7 @@ export interface Choice {
   id: string // Unique ID for the choice
   text: string // Text displayed to the player for this choice
   targetId: string // What happens next (e.g., location ID, encounter ID, 'END_GAME')
-  targetType: 'location' | 'encounter' | 'event' | 'game_over' | 'win' // What kind of target it is
+  targetType: 'location' | 'encounter' | 'event' | 'game_over' | 'win' | 'check_for_ambush' // What kind of target it is
   condition?: string // Optional: a string that refers to a game flag or player stat to check
   consequence?: string[] // Optional: actions that happen when this choice is made (e.g., 'gain_gold:10', 'lose_health:5')
 }
