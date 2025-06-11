@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'character-selection',
       component: () => import('../views/CharacterSelectionScreen.vue'), // Lazy loading the SelectionScreen component
     },
+    {
+      path: '/gameover',
+      name: 'gameover',
+      component: () => import('../views/GameOverScreen.vue'),
+    },
     // We can add more routes later, like a /game path
     // {
     //   path: '/game',

@@ -9,7 +9,7 @@
       <div class="player-stats">
         <h2>{{ playerName }}'s Stats</h2>
         <p>Health: {{ playerHealth }} / {{ playerMaxHealth }}</p>
-        <p>Attack: {{ playerAttack }}</p>
+        <p>Attack: {{ playerBaseAttack }}</p>
         <p>Defense: {{ playerDefense }}</p>
         <p>Gold: {{ playerGold }}</p>
         <p>
@@ -118,7 +118,7 @@ export default defineComponent({
     playerMaxHealth(): number {
       return this.playerStore.maxHealth
     },
-    playerAttack(): number {
+    playerBaseAttack(): number {
       return this.playerStore.attack
     },
     playerDefense(): number {
@@ -268,11 +268,48 @@ export default defineComponent({
       })
     },
     playerAttack() {
-      if (this.combatStore.isPlayersTurn) {
-        this.combatStore.addCombatLog(`You attack! (placeholder)`)
-        this.combatStore.nextTurn()
-      } else {
+      if (this.combatStore.isPlayersTurn || !this.combatStore.isActive) {
         this.combatStore.addCombatLog("It's not your turn!")
+        return
+      }
+      const targetEnemy = this.combatStore.activeEnemies.find((e) => e.health > 0)
+
+      if (targetEnemy) {
+        this.combatStore.addCombatLog(`You attack ${targetEnemy.name}`)
+        const combatDamage = Math.max(1, this.playerBaseAttack - targetEnemy.defense)
+        //actual attack
+        this.combatStore.dealDamageToEnemy(targetEnemy.id, combatDamage)
+
+        //check if all enemies are defeated
+        if (this.combatStore.allEnemiesDefeated) {
+          this.handleCombatEnd(true) //player wins
+        } else if (this.combatStore.isPlayerDefeated) {
+          this.handleCombatEnd(false) // player lost (shouldn't happen on player's turn)
+        } else {
+          this.combatStore.nextTurn() //advance to next turn
+        }
+      } else {
+        this.combatStore.addCombatLog('No enemies to attack!') //if this happens something went wrong in the logic.
+      }
+    },
+    // handles combat win or loss
+    handleCombatEnd(playerWon: boolean) {
+      this.combatStore.endCombat()
+      if (playerWon) {
+        this.gameWorldStore.addStoryLog(
+          'You emerged victorious from combat! Thine enemies never stood a chance!',
+        )
+        this.lastActionMessage = 'Combat victory!'
+        // TODO: Implement rewards, special narrative, etc.
+        // Return to current location's normal narrative
+        this.gameWorldStore.setGameStatus('PLAYING') // Back to normal
+        this.updateCurrentScene() // Refresh current location's description and choices
+      } else {
+        this.gameWorldStore.setGameStatus('GAME_OVER')
+        this.gameWorldStore.addStoryLog('You were defeated in combat!')
+        this.lastActionMessage = 'You have been defeated!'
+        const router = useRouter()
+        router.push({ name: 'gameover' }) // Navigate to Game Over screen
       }
     },
     goHome() {
@@ -315,6 +352,37 @@ export default defineComponent({
         if (this.combatStore.isActive && this.combatStore.combatLog.length > 0) {
           this.currentDescription =
             this.combatStore.combatLog[this.combatStore.combatLog.length - 1] // Show last log message as description
+        }
+      },
+    },
+    'combatStore.isCombatActive': {
+      handler(newVal, oldVal) {
+        if (newVal && !oldVal) {
+          // Combat just became active
+          this.updateCurrentScene()
+          this.currentDescription =
+            this.combatStore.combatLog[this.combatStore.combatLog.length - 1] ||
+            'Combat in progress...'
+          this.currentChoices = [] // Clear narrative choices
+        } else if (!newVal && oldVal) {
+          // Combat just ended
+          // Logic is now in handleCombatEnd
+        }
+      },
+    },
+    'combatStore.isPlayerDefeated': {
+      // Watch for player defeat directly
+      handler(newVal) {
+        if (newVal && this.combatStore.isActive) {
+          this.handleCombatEnd(false) // Player lost
+        }
+      },
+    },
+    'combatStore.allEnemiesDefeated': {
+      // Watch for all enemies defeated
+      handler(newVal) {
+        if (newVal && this.combatStore.isActive) {
+          this.handleCombatEnd(true) // Player won
         }
       },
     },
