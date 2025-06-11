@@ -80,7 +80,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
 import { usePlayerStore } from '../stores/playerStore'
 import { useGameWorldStore } from '../stores/gameWorldStore'
 import { getGameData } from '../services/dataLoader'
@@ -211,14 +210,13 @@ export default defineComponent({
         case 'game_over':
           this.gameWorldStore.setGameStatus('GAME_OVER')
           // Navigate to game over screen (future)
-          const router = useRouter()
-          router.push({ name: 'gameover' }) // Assuming you'll create this route
+
+          this.$router.push({ name: 'gameover' }) // Assuming you'll create this route
           break
         case 'win':
           this.gameWorldStore.setGameStatus('WIN')
           // Navigate to win screen (future)
-          const winRouter = useRouter()
-          winRouter.push({ name: 'win' }) // Assuming you'll create this route
+          this.$router.push({ name: 'win' }) // Assuming you'll create this route
           break
         case 'event': // Special events that don't change location/encounter directly (e.g., dialogue progression)
           // For 'event' type, we'd need more complex logic. For now, assume it's handled by consequences.
@@ -308,8 +306,7 @@ export default defineComponent({
         this.gameWorldStore.setGameStatus('GAME_OVER')
         this.gameWorldStore.addStoryLog('You were defeated in combat!')
         this.lastActionMessage = 'You have been defeated!'
-        const router = useRouter()
-        router.push({ name: 'gameover' }) // Navigate to Game Over screen
+        this.$router.push({ name: 'gameover' }) // Navigate to Game Over screen
       }
     },
     goHome() {

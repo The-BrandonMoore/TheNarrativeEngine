@@ -4,11 +4,11 @@
     <h1>Your Adventure Ends Here.</h1>
     <p>You fought valiantly, but destiny had other plans.</p>
 
-    <img
+    <!-- <img
       src="/assets/images/flickering_candle.gif"
       alt="A small flickering pixel art candle"
       class="game-over-animation-gif"
-    />
+    /> -->
 
     <button class="restart-button" @click="restartGame">Restart Game</button>
     <button class="home-button" @click="goHome">Back to Main Menu</button>
@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useRouter } from 'vue-router'
 import { usePlayerStore } from '../stores/playerStore'
 import { useGameWorldStore } from '../stores/gameWorldStore'
 import { useCombatStore } from '../stores/combatStore'
@@ -31,12 +30,10 @@ export default defineComponent({
       useGameWorldStore().$reset()
       useCombatStore().$reset() // Reset combat store too
 
-      const router = useRouter()
-      router.push({ name: 'home' }) // Go back to main menu to start fresh
+      this.$router.push({ name: 'home' }) // Go back to main menu to start fresh
     },
     goHome() {
-      const router = useRouter()
-      router.push({ name: 'home' }) // Go back to main menu
+      this.$router.push({ name: 'home' }) // Go back to main menu
     },
   },
 })
