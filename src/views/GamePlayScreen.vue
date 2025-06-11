@@ -268,7 +268,7 @@ export default defineComponent({
       })
     },
     playerAttack() {
-      if (this.combatStore.isPlayersTurn || !this.combatStore.isActive) {
+      if (!this.combatStore.isPlayersTurn || !this.combatStore.isActive) {
         this.combatStore.addCombatLog("It's not your turn!")
         return
       }

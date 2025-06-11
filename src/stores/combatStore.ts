@@ -82,11 +82,15 @@ export const useCombatStore = defineStore('combat', {
 
       const currentIndex = this.turnOrder.indexOf(this.currentTurnEntityId)
       let nextIndex = (currentIndex + 1) % this.turnOrder.length
-      const nextEntityId = this.turnOrder[nextIndex]
+      let nextEntityId = this.turnOrder[nextIndex]
 
-      while (nextEntityId !== 'player' && this.enemies.some((e) => e.id === nextEntityId)) {
+      while (
+        nextEntityId !== 'player' &&
+        this.enemies.some((e) => e.id === nextEntityId && e.health <= 0)
+      ) {
         console.log(`Skipping defeated enemy: ${nextEntityId}`)
         nextIndex = (nextIndex + 1) % this.turnOrder.length
+        nextEntityId = this.turnOrder[nextIndex]
         if (nextEntityId === 'player' && this.allEnemiesDefeated) {
           break
         }
