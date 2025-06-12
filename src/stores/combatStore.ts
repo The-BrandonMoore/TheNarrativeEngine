@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { type GameEnemy } from '@/types/game'
 import { getEnemyById } from '@/services/dataLoader'
 import { usePlayerStore } from './playerStore'
+import { rollDie } from '@/services/diceRoller'
 
 export interface CombatState {
   isActive: boolean
@@ -10,6 +11,7 @@ export interface CombatState {
   turnOrder: string[] // (player, enemies)
   currentTurnEntityId: string | null // who's turn is it?
   combatLog: string[]
+  defeatedEnemies: GameEnemy[]
 }
 
 export const useCombatStore = defineStore('combat', {
@@ -20,6 +22,7 @@ export const useCombatStore = defineStore('combat', {
     turnOrder: [],
     currentTurnEntityId: null,
     combatLog: [],
+    defeatedEnemies: [], // Keep track of enemies defeated in a single battle.
   }),
   getters: {
     isCombatActive: (state) => state.isActive,
@@ -37,6 +40,7 @@ export const useCombatStore = defineStore('combat', {
       this.isActive = true
       this.currentEnemyIds = enemyIds
       this.combatLog = [] // Clear previous combat log.
+      this.defeatedEnemies = [] // Clear previously defeated enemies.
 
       const loadedEnemies: GameEnemy[] = []
       enemyIds.forEach((id) => {
@@ -61,8 +65,50 @@ export const useCombatStore = defineStore('combat', {
       this.enemies = []
       this.turnOrder = []
       this.currentTurnEntityId = null
+
+      if (this.allEnemiesDefeated) {
+        this.processCombatRewards()
+      }
+
       this.combatLog.push('The battle is finished.')
       console.log('Combat Session Ended')
+    },
+    processCombatRewards() {
+      const playerStore = usePlayerStore()
+      let totalXpGained = 0
+      let totalGoldGained = 0
+      const itemsDropped: { [itemId: string]: number } = {}
+
+      this.defeatedEnemies.forEach((enemy) => {
+        const xpFromEnemy = enemy.experienceReward || 20
+        totalXpGained += xpFromEnemy
+        totalGoldGained += rollDie(enemy.goldReward || 5)
+
+        if (enemy.drops && enemy.drops.length > 0) {
+          enemy.drops.forEach((drop) => {
+            if (Math.random() < drop.chance) {
+              itemsDropped[drop.itemId] = itemsDropped[drop.itemId || 0] + 1
+            }
+          })
+        }
+      })
+
+      if (totalXpGained > 0) {
+        playerStore.gainExperience(totalXpGained)
+        this.addCombatLog(`You gained ${totalXpGained} experience points.`)
+      }
+      if (totalGoldGained > 0) {
+        playerStore.addGold(totalGoldGained)
+        this.addCombatLog(`You gained ${totalGoldGained} gold.`)
+      }
+
+      for (const itemId in itemsDropped) {
+        const quantity = itemsDropped[itemId]
+        for (let i = 0; i < quantity; i++) {
+          playerStore.addItemToInventory(itemId)
+        }
+        this.defeatedEnemies = []
+      }
     },
     nextTurn() {
       if (!this.isActive || !this.currentTurnEntityId) {
@@ -98,6 +144,7 @@ export const useCombatStore = defineStore('combat', {
         this.currentTurnEntityId = nextEntityId
         this.combatLog.push(`It is now ${this.currentTurnEntityId}'s turn...`)
 
+        // ENEMY AI
         if (this.currentTurnEntityId !== 'player') {
           //Find the actual enemy object
           const activeEnemy = this.enemies.find((e) => e.id === this.currentTurnEntityId)
@@ -132,6 +179,7 @@ export const useCombatStore = defineStore('combat', {
         this.addCombatLog(`${enemy.name} takes ${damage}.  (${enemy.health} / ${enemy.maxHealth})`)
         if (enemy.health <= 0) {
           this.addCombatLog(`${enemy.name} has been defeated!`)
+          this.defeatedEnemies.push(enemy)
           if (this.allEnemiesDefeated) {
             this.addCombatLog('You have defeated all enemies! The battle has been won!')
             this.endCombat()

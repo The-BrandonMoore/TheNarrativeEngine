@@ -12,6 +12,7 @@ export interface PlayerState {
   abilities: string[]
   experience: number
   level: number
+  image?: string
 }
 
 export const usePlayerStore = defineStore('player', {
@@ -27,11 +28,14 @@ export const usePlayerStore = defineStore('player', {
     abilities: [],
     experience: 0,
     level: 1,
+    image: undefined,
   }),
   getters: {
     isCharacterCreated: (state) => state.name !== '' && state.characterClass !== '',
     healthPercentage: (state) => (state.maxHealth > 0 ? (state.health / state.maxHealth) * 100 : 0),
     isAlive: (state) => state.health > 0,
+    xpToNextLevel: (state) => state.level * 100,
+    xpPercentage: (state) => (state.level > 0 ? (state.experience / (state.level * 100)) * 100 : 0),
   },
   actions: {
     setPlayerName(name: string) {
@@ -74,6 +78,10 @@ export const usePlayerStore = defineStore('player', {
     },
     resetPlayerState() {
       this.$reset()
+      this.characterClass = ''
+      this.experience = 0
+      this.level = 1
+      this.image = undefined
     },
     takeDamage(amount: number) {
       this.health = Math.max(0, this.health - amount)
@@ -97,6 +105,22 @@ export const usePlayerStore = defineStore('player', {
       if (index !== -1) {
         this.inventory.splice(index, 1)
       }
+    },
+    // Gain Experience
+    gainExperience(amount: number) {
+      this.experience += amount
+      if (this.experience > this.xpToNextLevel) {
+        this.levelUp()
+      }
+    },
+    levelUp() {
+      this.level++
+      this.experience = this.experience - (this.level - 1) * 100
+      this.health = this.maxHealth
+      this.attack += 2
+      this.defense += 1
+      this.addGold(50)
+      console.log(`Player Store: ${this.name} leveled up to Level ${this.level!}`)
     },
   },
 })

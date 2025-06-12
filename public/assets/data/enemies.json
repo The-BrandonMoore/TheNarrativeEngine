@@ -7,6 +7,8 @@
     "attack": 8,
     "defense": 2,
     "image": null,
+    "experienceReward": 30,
+    "goldReward": 8,
     "drops": [
       { "itemId": "rusty_dagger", "chance": 0.5 },
       { "itemId": "small_gold_pouch", "chance": 0.8 }
@@ -20,6 +22,8 @@
     "attack": 7,
     "defense": 1,
     "image": null,
+    "experienceReward": 25,
+    "goldReward": 5,
     "drops": [{ "itemId": "small_gold_pouch", "chance": 0.7 }]
   }
 ]

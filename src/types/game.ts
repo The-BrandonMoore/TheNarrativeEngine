@@ -71,6 +71,8 @@ export interface GameEnemy {
   attack: number
   defense: number
   abilities?: string[]
+  experienceReward: number
+  goldReward: number
   drops?: { itemId: string; chance: number }[] // What enemy might drop
   image?: string
 }
