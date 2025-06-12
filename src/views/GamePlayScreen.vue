@@ -85,7 +85,7 @@ import { useGameWorldStore } from '../stores/gameWorldStore'
 import { getGameData } from '../services/dataLoader'
 import { type GameLocation, type GameEncounter, type Choice } from '../types/game'
 import { useCombatStore } from '../stores/combatStore'
-import { rollDie, skillCheck } from '../services/diceRoller'
+import { rollDie } from '../services/diceRoller'
 
 export default defineComponent({
   name: 'GamePlayScreen',
