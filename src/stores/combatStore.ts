@@ -79,49 +79,50 @@ export const useCombatStore = defineStore('combat', {
         this.endCombat()
         return
       }
-
       const currentIndex = this.turnOrder.indexOf(this.currentTurnEntityId)
-      let nextIndex = (currentIndex + 1) % this.turnOrder.length
-      let nextEntityId = this.turnOrder[nextIndex]
+      setTimeout(() => {
+        let nextIndex = (currentIndex + 1) % this.turnOrder.length
+        let nextEntityId = this.turnOrder[nextIndex]
 
-      while (
-        nextEntityId !== 'player' &&
-        this.enemies.some((e) => e.id === nextEntityId && e.health <= 0)
-      ) {
-        console.log(`Skipping defeated enemy: ${nextEntityId}`)
-        nextIndex = (nextIndex + 1) % this.turnOrder.length
-        nextEntityId = this.turnOrder[nextIndex]
-        if (nextEntityId === 'player' && this.allEnemiesDefeated) {
-          break
+        while (
+          nextEntityId !== 'player' &&
+          this.enemies.some((e) => e.id === nextEntityId && e.health <= 0)
+        ) {
+          console.log(`Skipping defeated enemy: ${nextEntityId}`)
+          nextIndex = (nextIndex + 1) % this.turnOrder.length
+          nextEntityId = this.turnOrder[nextIndex]
+          if (nextEntityId === 'player' && this.allEnemiesDefeated) {
+            break
+          }
         }
-      }
-      this.currentTurnEntityId = nextEntityId
-      this.combatLog.push(`It is now ${this.currentTurnEntityId}'s turn...`)
+        this.currentTurnEntityId = nextEntityId
+        this.combatLog.push(`It is now ${this.currentTurnEntityId}'s turn...`)
 
-      if (this.currentTurnEntityId !== 'player') {
-        //Find the actual enemy object
-        const activeEnemy = this.enemies.find((e) => e.id === this.currentTurnEntityId)
-        if (activeEnemy && activeEnemy.health > 0) {
-          this.addCombatLog(`${activeEnemy.name} prepares to attack!`)
-          setTimeout(() => {
-            const playerStore = usePlayerStore()
-            const damageDealt = Math.max(1, activeEnemy.attack - playerStore.defense)
-            this.dealDamageToPlayer(damageDealt)
+        if (this.currentTurnEntityId !== 'player') {
+          //Find the actual enemy object
+          const activeEnemy = this.enemies.find((e) => e.id === this.currentTurnEntityId)
+          if (activeEnemy && activeEnemy.health > 0) {
+            this.addCombatLog(`${activeEnemy.name} prepares to attack!`)
+            setTimeout(() => {
+              const playerStore = usePlayerStore()
+              const damageDealt = Math.max(1, activeEnemy.attack - playerStore.defense)
+              this.dealDamageToPlayer(damageDealt)
 
-            //After enemy action check for player defeat
-            if (this.isPlayerDefeated) {
-              this.addCombatLog(
-                `You have been defeated. All hope is now lost. The world has fallen into darkness. Thanks for nothing ${playerStore.name}! Game Over`,
-              )
-              this.endCombat()
-            } else if (!this.allEnemiesDefeated) {
-              this.nextTurn()
-            }
-          }, 1000)
-        } else {
-          this.nextTurn()
+              //After enemy action check for player defeat
+              if (this.isPlayerDefeated) {
+                this.addCombatLog(
+                  `You have been defeated. All hope is now lost. The world has fallen into darkness. Thanks for nothing ${playerStore.name}! Game Over`,
+                )
+                this.endCombat()
+              } else if (!this.allEnemiesDefeated) {
+                this.nextTurn()
+              }
+            }, 1000)
+          } else {
+            this.nextTurn()
+          }
         }
-      }
+      }, 1500)
     },
 
     dealDamageToEnemy(enemyId: string, damage: number) {
